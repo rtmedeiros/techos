@@ -1,54 +1,35 @@
-
 package br.com.bugnacio.techos.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
- 
 
-// @Entitu: essa classe representa uma tabela no banco de daods
 @Entity
-
 public class Cliente {
-    // @id: o campo que representa a chave primaria da tabela.
-    // @GeneratedValue: o valor da chave primaria e gerado automaticamente.
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    //@NotBank: o nome do cliente não pode ser vazio.
-    //@Size tamanho maximo, message: o texto que aparece ao lado do campo
+    // @NotBlank: nao pode ficar vazio nem so com espacos.
 
-    @NotBlank(message = "O nome do cliente é obrigatório")
-    @Size(max = 100, message = "O nome do cliente não pode ter mais de 100 caracteres")
+    // @Size: tamanho maximo. message: o texto que aparece ao lado do campo.
+    @NotBlank(message = "Informe o nome")
+    @Size(max = 100, message = "O nome pode ter no máximo 100 caracteres")
     private String nome;
 
-    
-    //TELEFONE
-    
-    @NotBlank(message = "Informe o telefone do cliente")
-    
+    @NotBlank(message = "Informe o telefone")
     private String telefone;
-    
-    
-    //EMAIL
-    @NotBlank(message = "Informe um email válido")
+
+    // @Email: confere o formato, mas aceita vazio (o e-mail e opcional).
+    @Email(message = "E-mail inválido")
     private String email;
 
-
-    // Cada atributo vira uma coluna na tabela. O nome da coluna é o mesmo do
-    // atributo.
-    
-    
- 
-
-    // Construtor padrao (sem argumentos) necessario para o JPA
     public Cliente() {
-        
     }
 
     public Long getId() {
@@ -82,7 +63,4 @@ public class Cliente {
     public void setEmail(String email) {
         this.email = email;
     }
-
-   
-
 }
