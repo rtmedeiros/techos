@@ -13,6 +13,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import br.com.bugnacio.techos.model.Cliente;
 import br.com.bugnacio.techos.repository.ClienteRepository;
+import jakarta.validation.Valid;
 
 @Controller
 @RequestMapping("/clientes")
@@ -50,23 +51,36 @@ public class ClienteController {
         return "clientes/form";
     }
 
-    // CREATE / UPDATE: Salva um cliente novo ou atualizado.
+    // CREATE / UPDATE: Recebe, valida e salva os dados do cliente.
     @PostMapping("/salvar")
     public String salvar(
-            Cliente cliente,
+            @Valid Cliente cliente,
             BindingResult result,
             RedirectAttributes redirect) {
+
+        // Verifica se é um cadastro novo.
+        // Se o ID for null, significa que ainda não existe um registro no banco.
+        boolean novoCadastro = cliente.getId() == null;
 
         // Verifica se o telefone já está cadastrado.
         boolean jaExiste;
 
-        if (cliente.getId() == null) {
+        if (novoCadastro) {
+
+            // Cadastro novo:
+            // Verifica se já existe um cliente com o mesmo telefone.
             jaExiste = repo.existsByTelefone(cliente.getTelefone());
+
         } else {
+
+            // Atualização:
+            // Verifica se existe outro cliente com o mesmo telefone.
+            // O próprio cliente que está sendo editado é desconsiderado pelo ID.
             jaExiste = repo.existsByTelefoneAndIdNot(
                     cliente.getTelefone(), cliente.getId());
         }
 
+        // Se o telefone já existir, adiciona uma mensagem de erro.
         if (jaExiste) {
             result.rejectValue(
                     "telefone",
@@ -74,7 +88,7 @@ public class ClienteController {
                     "Já existe um cliente com este telefone");
         }
 
-        // Se houver erros, retorna ao formulário.
+        // Se houver erros de validação, retorna ao formulário.
         if (result.hasErrors()) {
             return "clientes/form";
         }
@@ -118,5 +132,4 @@ public class ClienteController {
 
         return "clientes/form";
     }
-
 }
